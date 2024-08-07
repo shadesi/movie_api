@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie API Documentation</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Movie API Documentation</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Request</th>
+                <th>URL</th>
+                <th>Request Body</th>
+                <th>Response</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>GET</td>
+                <td>/movies</td>
+                <td>N/A</td>
+                <td>Returns a list of all movies</td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/movies/:title</td>
+                <td>N/A</td>
+                <td>
+                    <pre>
+{
+    "Title": "Inception",
+    "Description": "A thief who steals corporate secrets...",
+    "Genre": { "Name": "Sci-Fi", "Description": "Science Fiction" },
+    "Director": { "Name": "Christopher Nolan", "Bio": "English-American film director..." },
+    "Actors": ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
+    "ImagePath": "/path/to/image.jpg",
+    "Featured": true
+}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/genres/:name</td>
+                <td>N/A</td>
+                <td>
+                    <pre>
+{
+    "Name": "Thriller",
+    "Description": "Thrillers are characterized by..."
+}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/directors/:name</td>
+                <td>N/A</td>
+                <td>
+                    <pre>
+{
+    "Name": "Christopher Nolan",
+    "Bio": "English-American film director...",
+    "Birth": "1970-07-30",
+    "Death": null
+}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td>/users</td>
+                <td>
+                    <pre>
+{
+    "Username": "JaneDoe",
+    "Password": "password123",
+    "Email": "jane.doe@example.com",
+    "Birthday": "1990-01-01"
+}
+                    </pre>
+                </td>
+                <td>
+                    <pre>
+{
+    "Username": "JaneDoe",
+    "Email": "jane.doe@example.com",
+    "Birthday": "1990-01-01",
+    "FavoriteMovies": []
+}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>PUT</td>
+                <td>/users/:username</td>
+                <td>
+                    <pre>
+{
+    "Username": "JaneDoeUpdated",
+    "Password": "newpassword123",
+    "Email": "jane.doe.updated@example.com",
+    "Birthday": "1990-01-01"
+}
+                    </pre>
+                </td>
+                <td>
+                    <pre>
+{
+    "Username": "JaneDoeUpdated",
+    "Email": "jane.doe.updated@example.com",
+    "Birthday": "1990-01-01",
+    "FavoriteMovies": []
+}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td>/users/:username/movies/:movieID</td>
+                <td>N/A</td>
+                <td>
+                    <pre>
+{
+    "Message": "Movie successfully added to user's favorites."
+}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>DELETE</td>
+                <td>/users/:username/movies/:movieID</td>
+                <td>N/A</td>
+                <td>
+                    <pre>
+{
+    "Message": "Movie successfully removed from user's favorites."
+}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>DELETE</td>
+                <td>/users/:username</td>
+                <td>N/A</td>
+                <td>
+                    <pre>
+{
+    "Message": "Username was deleted."
+}
+                    </pre>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
