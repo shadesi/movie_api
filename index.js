@@ -5,12 +5,14 @@ const cors = require("cors");
 const passport = require('passport');
 require('./passport'); // Ensure passport configuration is set up correctly
 const { check, validationResult } = require('express-validator');
+require('dotenv').config(); // Use dotenv to load environment variables
 
 // Initialize the app
 const app = express();
 
-// Connect to the database
-mongoose.connect("mongodb://localhost:27017/movieDB")
+// MongoDB connection (Update: Now using environment variables)
+const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/movieDB";
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -32,14 +34,14 @@ app.post('/login', (req, res) => {
 });
 
 // User Routes with Validation
-app.post('/users', 
+app.post('/users',
   // Validation logic for user registration
   [
     check('Username', 'Username is required and should be at least 5 characters long').isLength({ min: 5 }),
     check('Username', 'Username contains non-alphanumeric characters - not allowed.').isAlphanumeric(),
     check('Password', 'Password is required').not().isEmpty(),
     check('Email', 'Email does not appear to be valid').isEmail()
-  ], 
+  ],
   async (req, res) => {
     // Check for validation errors
     let errors = validationResult(req);
@@ -71,17 +73,17 @@ app.post('/users',
         console.error(error);
         res.status(500).send('Error: ' + error);
       });
-});
+  });
 
 // Update User with Validation
-app.put('/users/:Username', 
-  passport.authenticate('jwt', { session: false }), 
+app.put('/users/:Username',
+  passport.authenticate('jwt', { session: false }),
   [
     check('Username', 'Username is required and should be at least 5 characters long').optional().isLength({ min: 5 }),
     check('Username', 'Username contains non-alphanumeric characters - not allowed.').optional().isAlphanumeric(),
     check('Password', 'Password is required').optional().not().isEmpty(),
     check('Email', 'Email does not appear to be valid').optional().isEmail()
-  ], 
+  ],
   async (req, res) => {
     // Check for validation errors
     let errors = validationResult(req);
@@ -114,9 +116,7 @@ app.put('/users/:Username',
       console.error(err);
       res.status(500).send("Error: " + err);
     }
-});
-
-// Other routes (GET, DELETE, etc.) remain the same...
+  });
 
 // Example route to check if server is running
 app.get("/", (req, res) => {
