@@ -5,7 +5,7 @@ const cors = require("cors");
 const passport = require('passport');
 require('./passport'); // Passport configuration
 const { check, validationResult } = require('express-validator');
-require('dotenv').config(); // Load environment variables from .env
+//require('dotenv').config(); // Load environment variables from .env
 
 // Initialize Express
 const app = express();
