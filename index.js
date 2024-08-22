@@ -3,12 +3,15 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const passport = require('passport');
+require('dotenv').config(); // Load environment variables from .env
 require('./passport'); // Passport configuration
 const { check, validationResult } = require('express-validator');
-//require('dotenv').config(); // Load environment variables from .env
 
 // Initialize Express
 const app = express();
+
+// Suppress Mongoose strictQuery warning
+mongoose.set('strictQuery', false);
 
 // MongoDB connection using environment variables
 const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/movieDB";
