@@ -3,14 +3,14 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const passport = require('passport');
-require('./passport'); // Ensure passport configuration is set up correctly
+require('./passport'); // Passport configuration
 const { check, validationResult } = require('express-validator');
-require('dotenv').config(); // Use dotenv to load environment variables
+require('dotenv').config(); // Load environment variables from .env
 
-// Initialize the app
+// Initialize Express
 const app = express();
 
-// MongoDB connection (Update: Now using environment variables)
+// MongoDB connection using environment variables
 const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/movieDB";
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB connected"))
@@ -28,14 +28,11 @@ const Models = require("./models");
 const Movie = Models.Movie;
 const Users = Models.User;
 
-// Authentication Routes
-app.post('/login', (req, res) => {
-  // Your login logic here
-});
+// Authentication routes
+require('./auth')(app); // Include the authentication routes
 
 // User Routes with Validation
 app.post('/users',
-  // Validation logic for user registration
   [
     check('Username', 'Username is required and should be at least 5 characters long').isLength({ min: 5 }),
     check('Username', 'Username contains non-alphanumeric characters - not allowed.').isAlphanumeric(),
@@ -43,7 +40,6 @@ app.post('/users',
     check('Email', 'Email does not appear to be valid').isEmail()
   ],
   async (req, res) => {
-    // Check for validation errors
     let errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -55,27 +51,27 @@ app.post('/users',
         if (user) {
           return res.status(400).send(req.body.Username + ' already exists');
         } else {
-          Users
-            .create({
-              Username: req.body.Username,
-              Password: hashedPassword,
-              Email: req.body.Email,
-              Birthday: req.body.Birthday
-            })
-            .then((user) => { res.status(201).json(user) })
-            .catch((error) => {
-              console.error(error);
-              res.status(500).send('Error: ' + error);
-            });
+          Users.create({
+            Username: req.body.Username,
+            Password: hashedPassword,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          .then((user) => { res.status(201).json(user); })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          });
         }
       })
       .catch((error) => {
         console.error(error);
         res.status(500).send('Error: ' + error);
       });
-  });
+  }
+);
 
-// Update User with Validation
+// Update User
 app.put('/users/:Username',
   passport.authenticate('jwt', { session: false }),
   [
@@ -85,7 +81,6 @@ app.put('/users/:Username',
     check('Email', 'Email does not appear to be valid').optional().isEmail()
   ],
   async (req, res) => {
-    // Check for validation errors
     let errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -116,14 +111,15 @@ app.put('/users/:Username',
       console.error(err);
       res.status(500).send("Error: " + err);
     }
-  });
+  }
+);
 
-// Example route to check if server is running
+// Root Route
 app.get("/", (req, res) => {
   res.send("Welcome to MyFlix!");
 });
 
-// Static file serving for documentation
+// Documentation route
 app.use("/documentation", express.static("public"));
 
 // Global error handling middleware
@@ -132,7 +128,7 @@ app.use((err, req, res, next) => {
   res.status(500).send("Error");
 });
 
-// Start the server with dynamic port configuration
+// Start server
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
   console.log('Your app is listening on port ' + port);
