@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const passport = require('passport');
-require('dotenv').config(); // Load environment variables from .env
+//require('dotenv').config(); // Load environment variables from .env
 require('./passport'); // Passport configuration
 const { check, validationResult } = require('express-validator');
 
