@@ -123,7 +123,7 @@ app.get("/", (req, res) => {
 });
 
 // Documentation route
-app.use("/documentation", express.static("public"));
+app.use("/documentation.html", express.static("public"));
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
