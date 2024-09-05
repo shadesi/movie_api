@@ -34,6 +34,19 @@ const Users = Models.User;
 // Authentication routes
 require('./auth')(app); // Include the authentication routes
 
+// List of All users
+app.get("/users", (req, res) => {
+  Users.find()
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+
 // User Routes with Validation
 app.post('/users',
   [
@@ -99,7 +112,7 @@ app.put('/users/:Username',
         {
           $set: {
             Username: req.body.Username,
-            Password: req.body.Password,
+            Password: Users.hashPassword(req.body.Password),
             Email: req.body.Email,
             Birthday: req.body.Birthday,
           },
@@ -122,8 +135,99 @@ app.get("/", (req, res) => {
   res.send("Welcome to MyFlix!");
 });
 
+// List Of all movies
+app.get("/movies", passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movie.find()
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Error: " + error);
+    });
+});
+
+
+// Get a single movie
+app.get("/movies/:Title", passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movie.findOne({ Title: req.params.Title })
+    .then((movie) => {
+      res.json(movie);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Error: " + error);
+    });
+});
+
+//  add movies to favourites
+app.post("/users/:Username/movies/:MovieID", passport.authenticate('jwt', { session: false }), (req, res) => {
+  Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    {
+      $push: { FavoriteMovies: req.params.MovieID },
+    },
+    { new: true },
+    // callback
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      } else {
+        res.json(updatedUser);
+      }
+    }
+  );
+});
+
+// ?? remove movies from favourites
+app.delete("/users/:Username/movies/:MovieID", passport.authenticate('jwt', { session: false }), (req, res) => {
+  Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    {
+      $pull: { FavoriteMovies: req.params.MovieID },
+    },
+    { new: true },
+    // callback
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      } else {
+        res.json(updatedUser);
+      }
+    }
+  );
+});
+
+// Get  Single Director
+app.get("/directors/:Name", passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movie.findOne({ "Director.Name": req.params.Name })
+    .then((movie) => {
+      res.json(movie.Director);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Error: " + error);
+    });
+});
+
+// Get  Single Genre
+app.get("/genres/:Name", passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movie.findOne({ "Genre.Name": req.params.Name })
+    .then((movie) => {
+      res.json(movie.Genre);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Error: " + error);
+    });
+});
+
 // Documentation route
-app.use("/documentation", express.static("public"));
+app.get("/documentation", (req, res) => {
+  res.sendFile("public/documentation.html", { root: __dirname });
+})
 
 // Global error handling middleware
 app.use((err, req, res, next) => {

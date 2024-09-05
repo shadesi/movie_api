@@ -13,7 +13,7 @@ let generateJWTToken = (user) => {
 }
 
 module.exports = (app) => {
-  app.post('/auth/login', (req, res) => {
+  app.post('/auth/login', (req, res, next) => {
     passport.authenticate('local', { session: false }, (error, user, info) => {
       if (error || !user) {
         return res.status(400).json({
@@ -28,6 +28,6 @@ module.exports = (app) => {
         let token = generateJWTToken(user.toJSON());
         return res.json({ user, token });
       });
-    })(req, res);
+    })(req, res, next);
   });
 }
